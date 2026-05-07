@@ -1,8 +1,99 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Lab#9  or  Lab#10");
-//  За бажанням студента для задач можна створювати консольний проект або WinForm
-// Бажано для задач лаб. робіт створити окремі класи
-// Виконання  виконати в стилі багатозаданості :
-//   Lab9T2  lab9task2 = new Lab9T2; lab9task2.Run();
-// При бажанні можна створити багатозадачний режим виконання задач.
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Linq;
 
+namespace Lab9_10CharpT {
+    public class Lab9Task1 {
+        public void Run() {
+            // Task 1.9
+            string formula = "m(9,p(p(3,5),m(3,8)))";
+            Console.WriteLine($"Формула: {formula}");
+            try {
+                int res = Evaluate(formula);
+                Console.WriteLine($"Результат: {res}");
+            } catch (Exception ex) { Console.WriteLine($"Помилка: {ex.Message}"); }
+            // Task 1.9 end
+        }
+
+        private int Evaluate(string expr) {
+            Stack<char> ops = new Stack<char>();
+            Stack<int> vals = new Stack<int>();
+            for (int i = 0; i < expr.Length; i++) {
+                char c = expr[i];
+                if (c == 'm' || c == 'p') ops.Push(c);
+                else if (char.IsDigit(c)) vals.Push(c - '0');
+                else if (c == ')') {
+                    if (vals.Count >= 2 && ops.Count > 0) {
+                        int b = vals.Pop(), a = vals.Pop();
+                        char op = ops.Pop();
+                        vals.Push(op == 'm' ? ((a - b) % 10 + 10) % 10 : (a + b) % 10);
+                    }
+                }
+            }
+            return vals.Count > 0 ? vals.Pop() : 0;
+        }
+    }
+
+    public class Lab9Task2 {
+        public void Run() {
+            // Task 2.9
+            string[] data = { "Іванов 5 4 5", "Петров 3 2 4", "Сидоров 4 4 4" };
+            Queue<string> queue = new Queue<string>();
+            foreach (var s in data) queue.Enqueue(s);
+
+            Console.WriteLine("Студенти, що здали сесію:");
+            while (queue.Count > 0) {
+                string s = queue.Dequeue();
+                var parts = s.Split(' ');
+                bool success = true;
+                for (int i = 1; i < parts.Length; i++) if (int.Parse(parts[i]) < 4) success = false;
+                if (success) Console.WriteLine(s);
+            }
+            // Task 2.9 end
+        }
+    }
+
+    public class Lab9Task3 {
+        public void Run() {
+            // Task 3
+            ArrayList list = new ArrayList { "Іванов 5 4 5", "Петров 3 2 4", "Сидоров 4 4 4" };
+            Console.WriteLine("Успішні студенти (ArrayList):");
+            foreach (string s in list) {
+                var parts = s.Split(' ');
+                bool success = true;
+                for (int i = 1; i < parts.Length; i++) if (int.Parse(parts[i]) < 4) success = false;
+                if (success) Console.WriteLine(s);
+            }
+            // Task 3 end
+        }
+    }
+
+    public class Lab9Task4 {
+        public void Run() {
+            // Task 4
+            Hashtable catalog = new Hashtable();
+            catalog["Linkin Park - Meteora"] = new List<string> { "Somewhere I Belong", "Numb" };
+            catalog["Rammstein - Mutter"] = new List<string> { "Mein Herz brennt", "Sonne" };
+
+            foreach (DictionaryEntry entry in catalog) {
+                Console.WriteLine($"Диск: {entry.Key}");
+                foreach (string song in (List<string>)entry.Value!) Console.WriteLine($"  - {song}");
+            }
+            // Task 4 end
+        }
+    }
+
+    class Program {
+        static void Main() {
+            Console.OutputEncoding = Encoding.UTF8;
+            new Lab9Task1().Run();
+            new Lab9Task2().Run();
+            new Lab9Task3().Run();
+            new Lab9Task4().Run();
+            Console.ReadKey();
+        }
+    }
+}
