@@ -71,18 +71,92 @@ namespace Lab9_10CharpT {
         }
     }
 
-    public class Lab9Task4 {
-        public void Run() {
-            // Task 4
-            Hashtable catalog = new Hashtable();
-            catalog["Linkin Park - Meteora"] = new List<string> { "Somewhere I Belong", "Numb" };
-            catalog["Rammstein - Mutter"] = new List<string> { "Mein Herz brennt", "Sonne" };
+    public class CD {
+        public string Title { get; set; }
+        public string Artist { get; set; }
+        public List<string> Songs { get; set; } = new List<string>();
 
-            foreach (DictionaryEntry entry in catalog) {
-                Console.WriteLine($"Диск: {entry.Key}");
-                foreach (string song in (List<string>)entry.Value!) Console.WriteLine($"  - {song}");
+        public CD(string title, string artist) {
+            Title = title;
+            Artist = artist;
+        }
+
+        public override string ToString() {
+            return $"{Artist} - {Title} ({Songs.Count} пісень)";
+        }
+    }
+
+    public class Lab9Task4 {
+        private Hashtable catalog = new Hashtable();
+
+        public void AddDisk(string title, string artist) {
+            if (!catalog.ContainsKey(title)) {
+                catalog[title] = new CD(title, artist);
             }
-            // Task 4 end
+        }
+
+        public void RemoveDisk(string title) {
+            catalog.Remove(title);
+        }
+
+        public void AddSong(string diskTitle, string songTitle) {
+            if (catalog.ContainsKey(diskTitle)) {
+                ((CD)catalog[diskTitle]!).Songs.Add(songTitle);
+            }
+        }
+
+        public void RemoveSong(string diskTitle, string songTitle) {
+            if (catalog.ContainsKey(diskTitle)) {
+                ((CD)catalog[diskTitle]!).Songs.Remove(songTitle);
+            }
+        }
+
+        public void PrintCatalog() {
+            Console.WriteLine("--- Весь каталог ---");
+            foreach (DictionaryEntry entry in catalog) {
+                Console.WriteLine(entry.Value);
+            }
+        }
+
+        public void PrintDisk(string title) {
+            if (catalog.ContainsKey(title)) {
+                CD cd = (CD)catalog[title]!;
+                Console.WriteLine($"Диск: {cd.Artist} - {cd.Title}");
+                foreach (var song in cd.Songs) Console.WriteLine($"  * {song}");
+            }
+        }
+
+        public void SearchByArtist(string artist) {
+            Console.WriteLine($"--- Пошук за виконавцем: {artist} ---");
+            foreach (DictionaryEntry entry in catalog) {
+                CD cd = (CD)entry.Value!;
+                if (cd.Artist.Equals(artist, StringComparison.OrdinalIgnoreCase)) {
+                    Console.WriteLine(cd);
+                }
+            }
+        }
+
+        public void Run() {
+            Console.WriteLine("--- Завдання 4 (Каталог дисків) ---");
+            AddDisk("Meteora", "Linkin Park");
+            AddDisk("Mutter", "Rammstein");
+            AddDisk("Hybrid Theory", "Linkin Park");
+
+            AddSong("Meteora", "Somewhere I Belong");
+            AddSong("Meteora", "Numb");
+            AddSong("Mutter", "Sonne");
+
+            PrintCatalog();
+            Console.WriteLine();
+            PrintDisk("Meteora");
+            Console.WriteLine();
+            SearchByArtist("Linkin Park");
+
+            Console.WriteLine("\nВидаляємо 'Numb' з Meteora та весь диск Mutter...");
+            RemoveSong("Meteora", "Numb");
+            RemoveDisk("Mutter");
+            PrintCatalog();
+            PrintDisk("Meteora");
         }
     }
 
